@@ -11,4 +11,24 @@ class JobService
       raise StandardError, job.errors.full_messages.to_sentence
     end
   end
+
+  def self.process_jobs
+    begin
+      priorities = {'critical' => 1, 'high' => 2, 'medium' => 3, 'low' => 4}
+      sorted_jobs = Job.where(status: 'waiting')
+                       .sort_by { |job| [priorities[job.priority], job.created_at] }
+      job = sorted_jobs.first
+      if job.nil?
+        raise StandardError, 'No jobs available to process'
+      end
+      job.update!(status: 'in progress')
+      p "Job #{job.id} is now under processing"
+      sleep(3) # Simulate job processing with a delay
+      job.update!(status: 'done')
+      p "Job #{job.id} is completed"
+    rescue => e
+      # Handle any other unexpected error
+      p "An error occurred: #{e.message}"
+    end
+    end
 end

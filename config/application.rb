@@ -12,6 +12,8 @@ module JobQueueApi
     config.load_defaults 7.1
 
     config.factory_bot.definition_file_paths = ["spec/factories"]
+    config.active_job.queue_adapter = :sidekiq
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
