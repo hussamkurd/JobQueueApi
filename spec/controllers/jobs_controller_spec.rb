@@ -18,7 +18,7 @@ RSpec.describe JobsController, type: :controller do
 
   describe "POST #create" do
     context "with valid parameters" do
-      let(:valid_attributes) { { title: 'New Job', status: 'waiting', priority: 'high' } }
+      let(:valid_attributes) { { title: 'New Job', priority: 'high' } }
 
       it "creates a new Job" do
         expect {
@@ -33,7 +33,7 @@ RSpec.describe JobsController, type: :controller do
     end
 
     context "with invalid parameters" do
-      let(:invalid_attributes) { { title: '', status: 'unknown', priority: 'high' } }
+      let(:invalid_attributes) { { title: '', priority: 'unknown' } }
 
       it "does not create a new Job" do
         expect {

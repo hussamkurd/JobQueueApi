@@ -5,7 +5,9 @@ class JobService
 
   def self.create_job(params)
     job = Job.new(params)
+    job.status = 'waiting' #intial status
     if job.save
+      JobWorkerJob.perform_async # Trigger processing
       job
     else
       raise StandardError, job.errors.full_messages.to_sentence
@@ -22,10 +24,11 @@ class JobService
         raise StandardError, 'No jobs available to process'
       end
       job.update!(status: 'in progress')
-      p "Job #{job.id} is now under processing"
+      p "Job #{job.id}: '#{job.title}' is now under processing"
       sleep(3) # Simulate job processing with a delay
       job.update!(status: 'done')
-      p "Job #{job.id} is completed"
+      p "Job #{job.id}: '#{job.title}' is completed"
+      JobWorkerJob.perform_async if Job.where(status: 'waiting').exists?
     rescue => e
       # Handle any other unexpected error
       p "An error occurred: #{e.message}"
