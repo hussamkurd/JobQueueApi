@@ -35,6 +35,64 @@ This Ruby on Rails API is designed for basic queue job processing. It allows for
   ```bash
   foreman start
   ```
+The default port will be 5000
 
+## API Endpoints
+
+### List Jobs (GET): `/jobs`
+
+Retrieves all jobs along with their statuses.
+
+**Request Example:**
+Create Job (POST): /jobs
+```json
+POST /jobs
+Content-Type: application/json
+
+{
+  "title": "Job 1",
+  "priority": "high"
+}
+```
+**Response Example:**
+```json
+Status: 201 Created
+{
+  "id": 1,
+  "title": "Job 1",
+  "status": "waiting",
+  "priority": "high",
+  "created_at": "2023-11-19T15:00:00Z",
+  "updated_at": "2023-11-19T15:00:00Z"
+}
+```
+
+**Request Example:**
+GET /jobs
+
+**Response Example:**
+
+```json
+Status: 200 OK
+[
+{
+  "id": 1,
+  "title": "Job 1",
+  "status": "waiting",
+  "priority": "high",
+  "created_at": "2023-11-19T15:00:00Z",
+  "updated_at": "2023-11-19T15:00:00Z"
+}
+]
+```
+## Background Job Processing
+This project uses Sidekiq for processing jobs asynchronously. Jobs are created through the API and are processed based on their priorities ('critical', 'high', 'medium', 'low').
+The JobWorkerJob is responsible for picking and executing jobs from the queue.
+
+## How to Run the Test Suite
+Execute the following command to run the comprehensive test suite (covering models, controllers, services, and job workers):
+```bash
+bundle exec rspec
+```
 
    
