@@ -1,6 +1,6 @@
 # Job Queue API
 
-This Ruby on Rails API is designed for basic queue job processing. It allows for the creation and listing of jobs, each with a title, status, and priority. The jobs are managed in a queue and processed asynchronously, with support for various job statuses like "waiting," "done," "in progress," and "failed," and priority levels such as "critical," "high," "medium," and "low." The project uses Sidekiq for background job processing and is set up to run multiple services concurrently using Foreman.
+This Ruby on Rails API is designed for basic queue job processing. It allows for creating and listing jobs, each with a title, status, and priority. The jobs are managed in a queue and processed asynchronously, with support for various job statuses like "waiting," "done," "in progress," and "failed," and priority levels such as "critical," "high," "medium," and "low." The project uses Sidekiq for background job processing and is set up to run multiple services concurrently using Foreman.
 
 ## Ruby Version
 
@@ -38,16 +38,25 @@ This Ruby on Rails API is designed for basic queue job processing. It allows for
 The default port will be 5000
 
 ## API Endpoints
+First, you will need to generate a simple token by requesting the token endpoint
+#### Generate token (GET): `/tokens`
+**Response Example:**
+```json
 
-### List Jobs (GET): `/jobs`
-
-Retrieves all jobs along with their statuses.
+{
+    "token": "df7ae608fe22d78c234755a7f092158c"
+}
+```
+You will need to assign token to the Authorization header in any request you made
+#### Create Job (POST): /jobs
+Create new Jobs
 
 **Request Example:**
-Create Job (POST): /jobs
+
 ```json
 POST /jobs
 Content-Type: application/json
+Authorization: {TOKEN}
 
 {
   "title": "Job 1",
@@ -66,9 +75,14 @@ Status: 201 Created
   "updated_at": "2023-11-19T15:00:00Z"
 }
 ```
+### Get Jobs (GET): `/jobs`
+Retrieves all jobs along with their statuses.
 
 **Request Example:**
+
 GET /jobs
+
+Authorization: {TOKEN}
 
 **Response Example:**
 
@@ -87,7 +101,7 @@ Status: 200 OK
 ```
 ## Background Job Processing
 This project uses Sidekiq for processing jobs asynchronously. Jobs are created through the API and are processed based on their priorities ('critical', 'high', 'medium', 'low').
-The JobWorkerJob is responsible for picking and executing jobs from the queue.
+The JobWorkerJob is responsible for picking and executing jobs from the queue based on periority
 
 ## How to Run the Test Suite
 Execute the following command to run the comprehensive test suite (covering models, controllers, services, and job workers):
