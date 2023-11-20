@@ -103,6 +103,24 @@ Status: 200 OK
 This project uses Sidekiq for processing jobs asynchronously. Jobs are created through the API and are processed based on their priorities ('critical', 'high', 'medium', 'low').
 The JobWorkerJob is responsible for picking and executing jobs from the queue based on periority
 
+## Docker Update 
+Execute the following command to containerize the application and run 
+
+1.**Build the Image**
+```bash
+docker-compose build --no-cache
+```
+2.**Create the Database**
+```bash
+docker-compose run web rails db:create
+docker-compose run web rails db:migrate
+```
+3.**Run the container**
+```bash
+docker-compose up
+```
+Then you will be able to access the previous endpoints normally 
+http://localhost:3000/tokens
 ## How to Run the Test Suite
 Execute the following command to run the comprehensive test suite (covering models, controllers, services, and job workers):
 ```bash
