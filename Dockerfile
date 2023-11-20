@@ -1,4 +1,4 @@
-# syntax = docker/dockerfile:1
+# syntax=docker/dockerfile:1
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.2.2
@@ -12,7 +12,6 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"
-
 
 # Throw-away build stage to reduce size of final image
 FROM base as build
@@ -33,7 +32,6 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
-
 # Final stage for app image
 FROM base
 
@@ -41,6 +39,9 @@ FROM base
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl default-mysql-client libvips && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Install foreman gem
+RUN gem install foreman
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
@@ -51,9 +52,12 @@ RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp
 USER rails:rails
 
+
+
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
+ENV PATH="/rails/bin:${PATH}"
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD ["./bin/rails", "server"]
+CMD ["./bin/rails", "bundle", "exec", "rails", "server", "-b", "0.0.0.0"]

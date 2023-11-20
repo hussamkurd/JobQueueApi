@@ -11,7 +11,9 @@ module JobQueueApi
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
 
-    config.factory_bot.definition_file_paths = ["spec/factories"]
+    if Rails.env.test?
+      config.factory_bot.definition_file_paths = ["spec/factories"]
+    end
     config.active_job.queue_adapter = :sidekiq
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do

@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: foreman start -f ProcfileDocker
+    volumes:
+      - .:/rails
+    ports:
+      - "3000:5000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DATABASE_URL=mysql2://root:root@db/jobqueueapi-db-1
+      - REDIS_URL=redis://redis:6379/0
+
+  worker:
+    build: .
+    command: bundle exec sidekiq
+    volumes:
+      - .:/rails
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DATABASE_URL=mysql2://root:root@db/jobqueueapi-db-1
+      - REDIS_URL=redis://redis:6379/0
+      - RAILS_ENV=production
+      - RACK_ENV=production
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  db:
+    image: mysql:latest
+    volumes:
+      - ./tmp/db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: jobqueueapi-db-1
+    ports:
+      - "3306:3306"
